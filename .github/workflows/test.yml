@@ -1,0 +1,35 @@
+name: Test GIS Environment
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.11'
+    
+    - name: Install GDAL
+      run: |
+        sudo apt-get update
+        sudo apt-get install gdal-bin libgdal-dev
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test imports
+      run: |
+        python -c "import geopandas; print('✅ GeoPandas works')"
+        python -c "import rasterio; print('✅ Rasterio works')"
+        python -c "import sys; sys.path.append('src'); from config import Config; print('✅ Config works')"
